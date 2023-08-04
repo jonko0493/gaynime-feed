@@ -1,11 +1,11 @@
 import time
 from gql import gql, Client
-from gql.transport.aiohttp import AIOHTTPTransport
+from gql.transport.requests import RequestsHTTPTransport
 from english_words import get_english_words_set
 
 gaynimes = []
 
-transport = AIOHTTPTransport(url="https://graphql.anilist.co")
+transport = RequestsHTTPTransport(url="https://graphql.anilist.co", verify=True, retries=3)
 client = Client(transport=transport, fetch_schema_from_transport=True)
 
 def scrape():

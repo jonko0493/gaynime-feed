@@ -2,7 +2,7 @@ from atproto import models
 
 from server.logger import logger
 from server.database import db, Post
-from anilist_scraper import gaynimes
+from server.anilist_scraper import gaynimes
 
 def operations_callback(ops: dict) -> None:
     # Here we can filter, process, run ML classification, etc.
