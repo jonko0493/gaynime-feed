@@ -13,7 +13,7 @@ def operations_callback(ops: dict) -> None:
 
         for gay in gaynimes:
             if gay in record.text.lower() and (gay not in english_words or ("anime" in record.text.lower() or "manga" in record.text.lower())):
-                print(gay)
+                logger.info(f'Added record containing "{gay}"')
                 reply_parent = None
                 if record.reply and record.reply.parent.uri:
                     reply_parent = record.reply.parent.uri
