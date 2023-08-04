@@ -63,5 +63,5 @@ def scrape():
                         new_gaynimes.append(synonym)
             print(f"Scraped page {page} of tag {tag}...")
             page += 1
-            time.sleep(2)
+            time.sleep(1)
     gaynimes[:] = new_gaynimes[:]
