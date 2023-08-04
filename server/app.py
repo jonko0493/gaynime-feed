@@ -3,7 +3,6 @@ import signal
 import threading
 
 import schedule
-import time
 
 from server import config
 from server import data_stream
@@ -18,6 +17,9 @@ app = Flask(__name__)
 
 schedule.every().day.at("12:00").do(scrape)
 
+# always scrape once on startup
+scrape()
+
 stream_stop_event = threading.Event()
 stream_thread = threading.Thread(
     target=data_stream.run, args=(config.SERVICE_DID, operations_callback, stream_stop_event,)
@@ -31,9 +33,6 @@ def sigint_handler(*_):
 
 
 signal.signal(signal.SIGINT, sigint_handler)
-
-# always scrape once on startup
-scrape()
 
 @app.route('/')
 def index():
