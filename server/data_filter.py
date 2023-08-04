@@ -6,19 +6,17 @@ from atproto import models
 from server.logger import logger
 from server.database import db, Post
 from server.anilist_scraper import gaynimes
-from english_words import get_english_words_set
 
 sp_en = spacy.load('en_core_web_trf')
 
 def operations_callback(ops: dict) -> None:
     posts_to_create = []
-    english_words = get_english_words_set(['web2'], alpha=True, lower=True)
     for created_post in ops['posts']['created']:
         record = created_post['record']
         tweet_en = sp_en(record.text)
         for gay in gaynimes:
             if (
-                record.langs is not None and 'en' in record.langs and (gay in [ent.text.lower() for ent in tweet_en.ents if ent.label_ == 'WORK_OF_ART'] or (gay in [token.text.lower() for token in tweet_en if token.pos_ == 'PROPN' and token.text.lower() not in english_words and len(token.text) > 2]))
+                record.langs is not None and 'en' in record.langs and (gay in [ent.text.lower() for ent in tweet_en.ents if ent.label_ == 'WORK_OF_ART'] or (gay in [token.text.lower() for token in tweet_en if token.pos_ == 'PROPN' and not token.is_oov and len(token.text) > 2]))
                ):
                 logger.info(f'Added record containing "{gay}"')
                 reply_parent = None
