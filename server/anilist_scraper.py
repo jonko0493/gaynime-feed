@@ -51,16 +51,16 @@ def scrape():
             hasNextPage = data['Page']['pageInfo']['hasNextPage']
             for media in data['Page']['media']:
                 if media['title']['romaji'] is not None:
-                    new_gaynimes.append(media['title']['romaji'])
+                    new_gaynimes.append(str.strip(media['title']['romaji']))
                 if media['title']['english'] is not None:
-                    new_gaynimes.append(media['title']['english'])
+                    new_gaynimes.append(str.strip(media['title']['english']))
                 if media['title']['native'] is not None:
-                    new_gaynimes.append(media['title']['native'])
+                    new_gaynimes.append(str.strip(media['title']['native']))
                 if media['hashtag'] is not None:
-                    new_gaynimes.append(media['hashtag'][1:])
+                    new_gaynimes.append(str.strip(media['hashtag'][1:]))
                 for synonym in media['synonyms']:
                     if str.lower(synonym) not in english_words: # We exclude synonyms that are just English words
-                        new_gaynimes.append(synonym)
+                        new_gaynimes.append(str.strip(synonym))
             print(f"Scraped page {page} of tag {tag}...")
             page += 1
             time.sleep(1)
