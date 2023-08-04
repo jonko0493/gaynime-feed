@@ -4,7 +4,7 @@ from typing import Optional
 from server import config
 from server.database import Post
 
-uri = config.WHATS_ALF_URI
+uri = config.GAYNIME_URI
 
 
 def handler(cursor: Optional[str], limit: int) -> dict:

@@ -2,6 +2,9 @@ import sys
 import signal
 import threading
 
+import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
+
 from server import config
 from server import data_stream
 
@@ -9,15 +12,24 @@ from flask import Flask, jsonify, request
 
 from server.algos import algos
 from server.data_filter import operations_callback
+from server.anilist_scraper import scrape
 
 app = Flask(__name__)
+
+# always scrape once on startup
+scrape()
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=scrape, trigger="interval", seconds=8640)
+scheduler.start()
+
+atexit.register(lambda: scheduler.shutdown())
 
 stream_stop_event = threading.Event()
 stream_thread = threading.Thread(
     target=data_stream.run, args=(config.SERVICE_DID, operations_callback, stream_stop_event,)
 )
 stream_thread.start()
-
 
 def sigint_handler(*_):
     print('Stopping data stream...')
@@ -30,7 +42,7 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 @app.route('/')
 def index():
-    return 'ATProto Feed Generator powered by The AT Protocol SDK for Python (https://github.com/MarshalX/atproto).'
+    return 'The Gaynime feed for ATProto.'
 
 
 @app.route('/.well-known/did.json', methods=['GET'])

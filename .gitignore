@@ -1,3 +1,6 @@
+# Publish feed requires a password, so we'll stick it in a gitignored folder
+publish/
+
 .DS_Store
 .idea
 *.iml

@@ -1,5 +1,5 @@
-from . import whats_alf
+from . import gaynime
 
 algos = {
-    whats_alf.uri: whats_alf.handler
+    gaynime.uri: gaynime.handler
 }

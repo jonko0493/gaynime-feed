@@ -74,7 +74,7 @@ def main():
     ))
 
     print('Successfully published!')
-    print('Feed URI (put in "WHATS_ALF_URI" env var):', response.uri)
+    print('Feed URI (put in "GAYNIME_URI" env var):', response.uri)
 
 
 if __name__ == '__main__':

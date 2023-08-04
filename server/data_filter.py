@@ -2,7 +2,7 @@ from atproto import models
 
 from server.logger import logger
 from server.database import db, Post
-
+from anilist_scraper import gaynimes
 
 def operations_callback(ops: dict) -> None:
     # Here we can filter, process, run ML classification, etc.
@@ -15,13 +15,7 @@ def operations_callback(ops: dict) -> None:
     for created_post in ops['posts']['created']:
         record = created_post['record']
 
-        # print all texts just as demo that data stream works
-        post_with_images = isinstance(record.embed, models.AppBskyEmbedImages.Main)
-        inlined_text = record.text.replace('\n', ' ')
-        logger.info(f'New post (with images: {post_with_images}): {inlined_text}')
-
-        # only alf-related posts
-        if 'alf' in record.text.lower():
+        if any(gay in record.text.lower() for gay in gaynimes):
             reply_parent = None
             if record.reply and record.reply.parent.uri:
                 reply_parent = record.reply.parent.uri
