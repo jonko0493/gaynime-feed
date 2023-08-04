@@ -2,8 +2,8 @@ import sys
 import signal
 import threading
 
-import atexit
-from apscheduler.schedulers.background import BackgroundScheduler
+import schedule
+import time
 
 from server import config
 from server import data_stream
@@ -16,14 +16,7 @@ from server.anilist_scraper import scrape
 
 app = Flask(__name__)
 
-# always scrape once on startup
-scrape()
-
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=scrape, trigger="interval", seconds=8640)
-scheduler.start()
-
-atexit.register(lambda: scheduler.shutdown())
+schedule.every().day.at("12:00").do(scrape)
 
 stream_stop_event = threading.Event()
 stream_thread = threading.Thread(
@@ -39,6 +32,8 @@ def sigint_handler(*_):
 
 signal.signal(signal.SIGINT, sigint_handler)
 
+# always scrape once on startup
+scrape()
 
 @app.route('/')
 def index():
