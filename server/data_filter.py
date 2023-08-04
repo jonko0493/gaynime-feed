@@ -29,6 +29,7 @@ def operations_callback(ops: dict) -> None:
                     'reply_root': reply_root,
                 }
                 posts_to_create.append(post_dict)
+                break
 
     posts_to_delete = [p['uri'] for p in ops['posts']['deleted']]
     if posts_to_delete:
