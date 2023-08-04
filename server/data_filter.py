@@ -16,7 +16,7 @@ def operations_callback(ops: dict) -> None:
         tweet_en = sp_en(record.text)
         for gay in gaynimes:
             if (
-                record.langs is not None and 'en' in record.langs and (gay in [ent.text for ent in tweet_en.ents] or (gay in [token.text for token in tweet_en if token.pos_ == 'PROPN']))
+                record.langs is not None and 'en' in record.langs and (gay in [ent.text.lower() for ent in tweet_en.ents if ent.label_ == 'WORK_OF_ART'] or (gay in [token.text.lower() for token in tweet_en if token.pos_ == 'PROPN']))
                ):
                 logger.info(f'Added record containing "{gay}"')
                 reply_parent = None
