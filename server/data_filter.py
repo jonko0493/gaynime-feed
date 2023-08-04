@@ -1,3 +1,5 @@
+import regex
+
 from atproto import models
 
 from server.logger import logger
@@ -12,9 +14,9 @@ def operations_callback(ops: dict) -> None:
         record = created_post['record']
         for gay in gaynimes:
             if (
-                    gay in record.text.lower() and len(record.langs) > 0 and
-                    ('en' in record.langs and ((gay not in english_words and not gay.isdigit()) or ("anime" in record.text.lower() or "manga" in record.text.lower() or f"watching {gay}" in record.text.lower() or f"reading {gay}" in record.text.lower())))
-                     or ('ja' in record.langs and len(gay) >= 3 and record.embed is not None)
+                    gay in record.text.lower() and record.langs is not None and len(record.langs) > 0 and
+                    (('en' in record.langs and ((gay not in english_words and not gay.isdigit()) or ("anime" in record.text.lower() or "manga" in record.text.lower() or regex.search(fr"watch(ing)? {gay}", record.text.lower()) is not None or regex.search(fr"read(ing) {gay}", record.text.lower()) is not None)))
+                    or ('ja' in record.langs and len(gay) >= 3 and record.embed is not None))
                ):
                 logger.info(f'Added record containing "{gay}"')
                 reply_parent = None
