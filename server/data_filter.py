@@ -14,8 +14,8 @@ def operations_callback(ops: dict) -> None:
         record = created_post['record']
         for gay in gaynimes:
             if (
-                    gay in record.text.lower() and record.langs is not None and len(record.langs) > 0 and
-                    (('en' in record.langs and ((gay not in english_words and not gay.isdigit()) or ("anime" in record.text.lower() or "manga" in record.text.lower() or regex.search(fr"watch(ing)? {gay}", record.text.lower()) is not None or regex.search(fr"read(ing) {gay}", record.text.lower()) is not None)))
+                    regex.search(fr"(^|[ ""'\(]){gay}($|[ \.,;:""'\)])", record.text.lower()) and record.langs is not None and len(record.langs) > 0 and
+                    (('en' in record.langs and ((gay not in english_words and not (len(gay.split(' ')) == 2 and all(gay_word in english_words for gay_word in gay.split(' '))) and not gay.isdigit()) or ("anime" in record.text.lower() or "manga" in record.text.lower())))
                     or ('ja' in record.langs and len(gay) >= 3 and record.embed is not None))
                ):
                 logger.info(f'Added record containing "{gay}"')

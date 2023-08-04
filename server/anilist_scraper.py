@@ -59,7 +59,7 @@ def scrape():
                 if media['hashtag'] is not None:
                     new_gaynimes.append(str.strip(media['hashtag'][1:]).lower())
                 for synonym in media['synonyms']:
-                    if synonym.lower() not in english_words: # We exclude synonyms that are just English words
+                    if synonym.lower() not in english_words and len(synonym) > 2: # We exclude synonyms that are just English words or too short
                         new_gaynimes.append(str.strip(synonym.lower()))
             print(f"Scraped page {page} of tag {tag}...")
             page += 1
