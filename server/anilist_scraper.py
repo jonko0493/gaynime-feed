@@ -64,4 +64,4 @@ def scrape():
             print(f"Scraped page {page} of tag {tag}...")
             page += 1
             time.sleep(1)
-    gaynimes[:] = new_gaynimes[:]
+    gaynimes[:] = list(filter(None, new_gaynimes))
