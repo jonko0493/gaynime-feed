@@ -1,7 +1,6 @@
 import time
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
-from english_words import get_english_words_set
 
 gaynimes = []
 
@@ -9,9 +8,7 @@ transport = RequestsHTTPTransport(url="https://graphql.anilist.co", verify=True,
 client = Client(transport=transport, fetch_schema_from_transport=True)
 
 def scrape():
-    new_gaynimes = []
-    english_words = get_english_words_set(['web2'], alpha=True, lower=True)
-    
+    new_gaynimes = []    
     tags_to_scrape = [ "Yuri", "Boys' Love" ]
     for tag in tags_to_scrape:
         page = 1
@@ -41,6 +38,7 @@ def scrape():
                         }
                         hashtag
                         synonyms
+                        popularity
                     }
                 }
             }
@@ -50,17 +48,18 @@ def scrape():
             data = client.execute(query, params)
             hasNextPage = data['Page']['pageInfo']['hasNextPage']
             for media in data['Page']['media']:
-                if media['title']['romaji'] is not None:
-                    new_gaynimes.append(str.strip(media['title']['romaji']).lower())
-                if media['title']['english'] is not None:
-                    new_gaynimes.append(str.strip(media['title']['english']).lower())
-                if media['title']['native'] is not None:
-                    new_gaynimes.append(str.strip(media['title']['native']).lower())
-                if media['hashtag'] is not None:
-                    new_gaynimes.append(str.strip(media['hashtag'][1:]).lower())
-                for synonym in media['synonyms']:
-                    if synonym.lower() not in english_words and len(synonym) > 2: # We exclude synonyms that are just English words or too short
-                        new_gaynimes.append(str.strip(synonym.lower()))
+                if media['popularity'] >= 100:
+                    if media['title']['romaji'] is not None:
+                        new_gaynimes.append(str.strip(media['title']['romaji']).lower())
+                    if media['title']['english'] is not None:
+                        new_gaynimes.append(str.strip(media['title']['english']).lower())
+                    if media['title']['native'] is not None:
+                        new_gaynimes.append(str.strip(media['title']['native']).lower())
+                    if media['hashtag'] is not None:
+                        new_gaynimes.append(str.strip(media['hashtag'][1:]).lower())
+                    for synonym in media['synonyms']:
+                        if len(synonym) > 2:
+                            new_gaynimes.append(str.strip(synonym.lower()))
             print(f"Scraped page {page} of tag {tag}...")
             page += 1
             time.sleep(1)

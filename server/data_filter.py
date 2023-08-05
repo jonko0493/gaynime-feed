@@ -15,7 +15,7 @@ def operations_callback(ops: dict) -> None:
         record = created_post['record']
         tweet_en = sp_en(record.text)
         if 'gaynime' in record.text:
-            logger.info(f'{tweet_en.text}\t{tweet_en.ents}\t{", ".join(tweet_en)}')
+            logger.info(f"{tweet_en.text}\t{tweet_en.ents}\t{', '.join(token.pos_ for token in tweet_en)}")
         for gay in gaynimes:
             if (
                 record.langs is not None and 'en' in record.langs and (gay in [ent.text.lower() for ent in tweet_en.ents if ent.label_ == 'WORK_OF_ART'] or (gay in [token.text.lower() for token in tweet_en if token.pos_ == 'PROPN' and not token.is_oov and len(token.text) > 2]))
