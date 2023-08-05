@@ -27,7 +27,7 @@ def scrape():
                         hasNextPage
                         perPage
                     }
-                    media (tag_in: [$tag])
+                    media (tag_in: [$tag], popularity_greater: 99)
                     {
                         id
                         title
@@ -48,18 +48,17 @@ def scrape():
             data = client.execute(query, params)
             hasNextPage = data['Page']['pageInfo']['hasNextPage']
             for media in data['Page']['media']:
-                if media['popularity'] >= 100:
-                    if media['title']['romaji'] is not None:
-                        new_gaynimes.append(str.strip(media['title']['romaji']).lower())
-                    if media['title']['english'] is not None:
-                        new_gaynimes.append(str.strip(media['title']['english']).lower())
-                    if media['title']['native'] is not None:
-                        new_gaynimes.append(str.strip(media['title']['native']).lower())
-                    if media['hashtag'] is not None:
-                        new_gaynimes.append(str.strip(media['hashtag'][1:]).lower())
-                    for synonym in media['synonyms']:
-                        if len(synonym) > 2:
-                            new_gaynimes.append(str.strip(synonym.lower()))
+                if media['title']['romaji'] is not None:
+                    new_gaynimes.append(str.strip(media['title']['romaji']).lower())
+                if media['title']['english'] is not None:
+                    new_gaynimes.append(str.strip(media['title']['english']).lower())
+                if media['title']['native'] is not None:
+                    new_gaynimes.append(str.strip(media['title']['native']).lower())
+                if media['hashtag'] is not None:
+                    new_gaynimes.append(str.strip(media['hashtag'][1:]).lower())
+                for synonym in media['synonyms']:
+                    if len(synonym) > 2:
+                        new_gaynimes.append(str.strip(synonym.lower()))
             print(f"Scraped page {page} of tag {tag}...")
             page += 1
             time.sleep(1)
