@@ -1,3 +1,4 @@
+import os
 from pymongo import MongoClient
 import time
 from gql import gql, Client
@@ -9,7 +10,8 @@ if __name__ == '__main__':
 else:
     from server.nlp import sp_en
 
-client = MongoClient()
+dbhost = "localhost" if os.environ['DB_HOST'] is None else os.environ['DB_HOST']
+client = MongoClient(dbhost, 27017)
 gaydb = client.gaynime
 gaynimes = gaydb.gaynimes
 
