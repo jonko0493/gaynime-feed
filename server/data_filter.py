@@ -27,10 +27,10 @@ def operations_callback(ops: dict) -> None:
             text_ents = [ent.text.lower() for ent in tweet_en.ents if ent.label_ != 'CARDINAL' and ent.label_ != 'DATE' and ent.label_ != 'MONEY' and ent.label_ != 'TIME' and ent.label_ != 'PERCENT' and ent.label_ != 'QUANTITY' and ent.label_ != 'ORDINAL']
             for gay in gaynimes.find():
                 weight = 0
-                if gay['title_romaji']['item'] is not None and ((len(gay['title_romaji']['item'].strip().split(' ')) > 1 and gay['title_romaji']['item'] in record.text.lower()) or gay['title_romaji']['item'] in [token.lower() for token in tweet_en]):
+                if gay['title_romaji']['item'] is not None and ((len(gay['title_romaji']['item'].strip().split(' ')) > 1 and gay['title_romaji']['item'] in record.text.lower()) or gay['title_romaji']['item'] in [token.text.lower() for token in tweet_en]):
                         weight += gay['title_romaji']['weight']
                         logger.info(f"Found {gay['title_romaji']}, new weight {weight}")
-                if gay['title_english']['item'] is not None and ((len(gay['title_english']['item'].strip().split(' ')) > 1 and gay['title_english']['item'] in record.text.lower()) or gay['title_english']['item'] in [token.lower() for token in tweet_en]):
+                if gay['title_english']['item'] is not None and ((len(gay['title_english']['item'].strip().split(' ')) > 1 and gay['title_english']['item'] in record.text.lower()) or gay['title_english']['item'] in [token.text.lower() for token in tweet_en]):
                     weight += gay['title_english']['weight']
                     logger.info(f"Found {gay['title_english']}, new weight {weight}")
                 for hashtag in gay['hashtags']:
@@ -38,7 +38,7 @@ def operations_callback(ops: dict) -> None:
                         weight += hashtag['weight']
                         logger.info(f"Found {hashtag}, new weight {weight}")
                 for synonym in gay['synonyms']:
-                    if synonym['item'] is not None and (synonym['item'].lower() in text_ents or synonym['item'].lower() in [token.lower() for token in tweet_en if token.pos_ == 'NOUN' or token.pos_ == 'PROPN']):
+                    if synonym['item'] is not None and (synonym['item'].lower() in text_ents or synonym['item'].lower() in [token.text.lower() for token in tweet_en if token.pos_ == 'NOUN' or token.pos_ == 'PROPN']):
                         weight += synonym['weight']
                         logger.info(f"Found {synonym} new weight {weight}")
                 for ent in gay['entities']:
