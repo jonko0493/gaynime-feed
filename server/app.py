@@ -19,6 +19,8 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(scrape, 'interval', minutes=86400)
 scheduler.start()
 
+scrape()
+
 stream_stop_event = threading.Event()
 stream_thread = threading.Thread(
     target=data_stream.run, args=(config.SERVICE_DID, operations_callback, stream_stop_event,)
