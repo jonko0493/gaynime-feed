@@ -2,7 +2,7 @@ import sys
 import signal
 import threading
 
-import schedule
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from server import config
 from server import data_stream
@@ -15,10 +15,9 @@ from server.anilist_scraper import scrape
 
 app = Flask(__name__)
 
-schedule.every().day.at("12:00").do(scrape)
-
-# always scrape once on startup
-scrape()
+scheduler = BackgroundScheduler()
+scheduler.add_job(scrape, 'interval', minutes=86400)
+scheduler.start()
 
 stream_stop_event = threading.Event()
 stream_thread = threading.Thread(

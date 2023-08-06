@@ -1,5 +1,4 @@
 import typing as t
-import schedule
 
 from atproto import CAR, AtUri, models
 from atproto.exceptions import FirehoseError
@@ -62,7 +61,6 @@ def _get_ops_by_type(commit: models.ComAtprotoSyncSubscribeRepos.Commit) -> dict
 def run(name, operations_callback, stream_stop_event=None):
     while True:
         try:
-            schedule.run_pending()
             _run(name, operations_callback, stream_stop_event)
         except FirehoseError as e:
             if e.__context__ and e.__context__.args:
