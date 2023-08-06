@@ -143,6 +143,9 @@ def scrape():
             page += 1
             time.sleep(1)
 
+def scrape_bad():
+    return
+
 def weight():
     return
 
