@@ -2,7 +2,7 @@ from atproto import models
 
 from server.logger import logger
 from server.database import db, Post
-from server.anilist_scraper import gaynimes, WeightedAttribute, Character, Gaynime
+from server.anilist_scraper import gaynimes, WeightedAttribute
 from server.nlp import sp_en
 
 weight_threshold = 3.0
@@ -27,14 +27,16 @@ def operations_callback(ops: dict) -> None:
             text_ents = [ent.text.lower() for ent in tweet_en.ents if ent.label_ != 'CARDINAL' and ent.label_ != 'DATE' and ent.label_ != 'MONEY' and ent.label_ != 'TIME' and ent.label_ != 'PERCENT' and ent.label_ != 'QUANTITY' and ent.label_ != 'ORDINAL']
             for gay in gaynimes.find():
                 weight = 0
-                gaynime = Gaynime.from_db(gay)
-                if gaynime.title_romaji.item in text_ents:
-                    weight += gaynime.title_romaji.weight
-                if gaynime.title_english.item in text_ents:
-                    weight += gaynime.title_english.weight
-                for ent in gaynime.entities:
-                    if ent.item in text_ents:
-                        weight += ent.weight
+                if gay['title_romaji']['item'] in text_ents:
+                    weight += gay['title_romaji']['weight']
+                    logger.info(f"Found {gay['title_romaji']}, new weight {weight}")
+                if gay['title_english']['item'] in text_ents:
+                    weight += gay['title_english']['weight']
+                    logger.info(f"Found {gay['title_english']}, new weight {weight}")
+                for ent in gay['entities']:
+                    if ent['item'] in text_ents:
+                        weight += ent['weight']
+                        logger.info(f"Found {ent['item']}, new weight {weight}")
                 
                 if weight > weight_threshold:
                     logger.info(f'Added record containing "{gay}"')
