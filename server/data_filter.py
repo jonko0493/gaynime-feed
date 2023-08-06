@@ -25,18 +25,35 @@ def operations_callback(ops: dict) -> None:
         if record.langs is not None and 'en' in record.langs: # (gay in [ent.text.lower() for ent in tweet_en.ents if ent.label_ == 'WORK_OF_ART' or ent.label_ == 'PRODUCT'] or (gay in [token.text.lower() for token in tweet_en if token.pos_ == 'PROPN' and not token.is_oov and len(token.text) > 2]))
             tweet_en = sp_en(record.text)
             text_ents = [ent.text.lower() for ent in tweet_en.ents if ent.label_ != 'CARDINAL' and ent.label_ != 'DATE' and ent.label_ != 'MONEY' and ent.label_ != 'TIME' and ent.label_ != 'PERCENT' and ent.label_ != 'QUANTITY' and ent.label_ != 'ORDINAL']
-            for gay in gaynimes.find():
-                weight = 0
-                if gay['title_romaji']['item'] in text_ents:
-                    weight += gay['title_romaji']['weight']
-                    logger.info(f"Found {gay['title_romaji']}, new weight {weight}")
-                if gay['title_english']['item'] in text_ents:
-                    weight += gay['title_english']['weight']
-                    logger.info(f"Found {gay['title_english']}, new weight {weight}")
-                for ent in gay['entities']:
-                    if ent['item'] in text_ents:
-                        weight += ent['weight']
-                        logger.info(f"Found {ent['item']}, new weight {weight}")
+        for gay in gaynimes.find():
+            weight = 0
+            if gay['title_romaji']['item'] is not None and gay['title_romaji']['item'] in tweet_en.text.lower():
+                weight += gay['title_romaji']['weight']
+                logger.info(f"Found {gay['title_romaji']}, new weight {weight}")
+            if gay['title_english']['item'] is not None and gay['title_english']['item'] in tweet_en.text.lower():
+                weight += gay['title_english']['weight']
+                logger.info(f"Found {gay['title_english']}, new weight {weight}")
+            for synonym in gay['synonyms']:
+                if synonym['item'] is not None and synonym['item'].lower() in tweet_en.text.lower():
+                    weight += synonym['weight']
+                    logger.info(f"Found {synonym} new weight {weight}")
+            for ent in gay['entities']:
+                if ent['item'] is not None and ent['item'].lower() in text_ents:
+                    weight += ent['weight']
+                    logger.info(f"Found {ent}, new weight {weight}")
+            for character in gay['characters']:
+                if character['name']['item'] is not None and character['name']['item'].lower() in text_ents:
+                    weight += character['name']['weight']
+                    logger.info(f"Found {character['name']}, new weight {weight}")
+                if character['name_first']['item'] is not None and character['name_first']['item'].lower() in text_ents:
+                    weight += character['name_first']['weight']
+                    logger.info(f"Found {character['name_first']}, new weight {weight}")
+                if character['name_last']['item'] is not None and character['name_last']['item'].lower() in text_ents:
+                    weight += character['name_last']['weight']
+                    logger.info(f"Found {character['name_last']}, new weight {weight}")
+                if character['name_pref']['item'] is not None and character['name_pref']['item'].lower() in text_ents:
+                    weight += character['name_pref']['weight']
+                    logger.info(f"Found {character['name_pref']}, new weight {weight}")
                 
                 if weight > weight_threshold:
                     logger.info(f'Added record containing "{gay}"')
