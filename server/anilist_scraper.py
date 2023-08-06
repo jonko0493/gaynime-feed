@@ -11,6 +11,7 @@ if __name__ == '__main__':
     sp_en = spacy.load('en_core_web_trf')
 else:
     from server.nlp import sp_en
+    from server.logger import logger
 
 dbhost = "localhost" if os.environ['DB_HOST'] is None else os.environ['DB_HOST']
 client = MongoClient(dbhost, 27017)
@@ -148,8 +149,16 @@ def scrape():
                     if len(media['characters']['nodes']) > 0:
                         gaynime = Gaynime(media)
                         gaynimes.insert_one(gaynime.db())
-                        print(f"Added {media['title']}")
-            print(f"Scraped page {page} of tag {tag}...")
+                        log_mes = f"Added {media['title']}"
+                        if __name__ == '__main__':
+                            print(log_mes)
+                        else:
+                            logger.info(log_mes)
+            log_mes = f"Scraped page {page} of tag {tag}..."
+            if __name__ == '__main__':
+                print(log_mes)
+            else:
+                logger.info(log_mes)
             page += 1
             time.sleep(1)
 
