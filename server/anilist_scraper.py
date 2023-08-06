@@ -1,8 +1,10 @@
 import os
 from pymongo import MongoClient
+import logging
 import time
 from gql import gql, Client
 from gql.transport.requests import RequestsHTTPTransport
+from gql.transport.requests import log as gql_logger
 
 if __name__ == '__main__':
     import spacy
@@ -16,6 +18,7 @@ gaydb = client.gaynime
 gaynimes = gaydb.gaynimes
 
 transport = RequestsHTTPTransport(url="https://graphql.anilist.co", verify=True, retries=3)
+gql_logger.setLevel(logging.WARNING)
 client = Client(transport=transport, fetch_schema_from_transport=True)
 
 class WeightedAttribute:
@@ -142,8 +145,8 @@ def scrape():
             hasNextPage = data['Page']['pageInfo']['hasNextPage']
             for media in data['Page']['media']:
                 if not gaynimes.find_one({'id': media['id']}):
-                    gaynime = Gaynime(media)
-                    if len(gaynime.characters) > 0:
+                    if len(media['characters']['nodes']) > 0:
+                        gaynime = Gaynime(media)
                         gaynimes.insert_one(gaynime.db())
                         print(f"Added {media['title']}")
             print(f"Scraped page {page} of tag {tag}...")
