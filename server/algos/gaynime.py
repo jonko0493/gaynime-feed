@@ -8,7 +8,7 @@ uri = config.GAYNIME_URI
 
 
 def handler(cursor: Optional[str], limit: int) -> dict:
-    posts = Post.select().order_by(Post.indexed_at.desc()).order_by(Post.cid.desc()).limit(limit)
+    posts = Post.select().order_by(Post.indexed_at.desc()).limit(limit) #.order_by(Post.cid.desc()).limit(limit)
 
     if cursor:
         cursor_parts = cursor.split('::')

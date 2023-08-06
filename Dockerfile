@@ -1,6 +1,7 @@
 FROM python
 
 RUN mkdir /app
+RUN mkdir /db
 
 COPY requirements.txt /app/
 

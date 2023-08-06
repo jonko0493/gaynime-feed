@@ -3,7 +3,7 @@ from datetime import datetime
 import peewee
 
 
-db = peewee.SqliteDatabase('feed_database.db')
+db = peewee.SqliteDatabase('/db/feed_database.db')
 
 
 class BaseModel(peewee.Model):
