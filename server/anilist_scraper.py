@@ -352,7 +352,7 @@ def weight():
                     character['name_pref']['weight'] /= 2
                 else:
                     character['name_pref']['weight'] *= 2
-        log_mes = f"Finished weight {gay['title']}"
+        log_mes = f"Finished weight for {gay['title_romaji']}"
         if __name__ == '__main__':
             print(log_mes)
         else:
