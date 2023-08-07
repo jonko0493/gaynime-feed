@@ -5,7 +5,7 @@ from server.database import db, Post
 from server.anilist_scraper import gaynimes, WeightedAttribute
 from server.nlp import sp_en
 
-weight_threshold = 3.0
+weight_threshold = 150.0
 
 hardcoded_weights = [
     WeightedAttribute('yuri', 100.0),

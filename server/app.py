@@ -11,7 +11,7 @@ from flask import Flask, jsonify, request
 
 from server.algos import algos
 from server.data_filter import operations_callback
-from server.anilist_scraper import scrape
+from server.anilist_scraper import scrape, scrape_bad, weight
 
 app = Flask(__name__)
 
@@ -20,6 +20,8 @@ scheduler.add_job(scrape, 'interval', minutes=86400)
 scheduler.start()
 
 scrape()
+scrape_bad()
+weight()
 
 stream_stop_event = threading.Event()
 stream_thread = threading.Thread(
