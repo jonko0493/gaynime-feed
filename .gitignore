@@ -1,5 +1,6 @@
 # Publish feed requires a password, so we'll stick it in a gitignored folder
 publish/
+data/
 
 .DS_Store
 .idea

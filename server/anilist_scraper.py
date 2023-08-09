@@ -18,6 +18,8 @@ dbhost = "localhost" if os.environ['DB_HOST'] is None else os.environ['DB_HOST']
 client = MongoClient(dbhost, 27017)
 gaydb = client.gaynime
 gaynimes = gaydb.gaynimes
+anilistreviews = gaydb.anilistreviews
+relations = gaydb.relations
 
 baddb = client.baddb
 badmovies = baddb.movies
@@ -55,6 +57,8 @@ class Character:
 class Gaynime:
     def __init__(self, media):
         self.id = media['id']
+        self.idMal = media['idMal']
+        self.type = media['type'].lower()
         self.title_romaji =  WeightedAttribute(None, 0.0) if media['title']['romaji'] is None or media['title']['romaji'] == '' else WeightedAttribute(media['title']['romaji'].strip().lower(), 100.0)
         self.title_english = WeightedAttribute(None, 0.0) if media['title']['english'] is None or media['title']['english'] == '' else WeightedAttribute(media['title']['english'].strip().lower(), 100.0)
         self.title_native = WeightedAttribute(None, 0.0) if media['title']['native'] is None or media['title']['native'] == '' else WeightedAttribute(media['title']['native'].strip().lower(), 100.0)
@@ -74,6 +78,8 @@ class Gaynime:
     def db(self):
         return {
             "id": self.id,
+            "idMal": self.idMal,
+            "type": self.type,
             "title_romaji": self.title_romaji.db(),
             "title_english": self.title_english.db(),
             "title_native": self.title_native.db(),
@@ -102,6 +108,8 @@ def scrape():
                     media (tag_in: [$tag], minimumTagRank: 50, popularity_greater: 99)
                     {
                         id
+                        idMal
+                        type
                         title
                         {
                             romaji
@@ -231,6 +239,7 @@ def scrape_bad():
                 media (tag_not_in: ["Yuri", "Boys' Love"], minimumTagRank: 50, popularity_greater: 1999)
                 {
                     id
+                    idMal
                     title
                     {
                         romaji
@@ -271,6 +280,107 @@ def scrape_bad():
             print(log_mes)
         else:
             logger.info(log_mes)
+
+def consolidate_collection(collection):
+    already_processed = []
+    types = ['anime', 'manga'] # We do it this way so that we make the anime the parent when possible
+    for media_type in types:
+        for media in collection.find({'type': media_type}):
+            query = gql(
+            """
+            query ($mediaId: Int)
+            {
+                Page
+                {
+                    media(id: $mediaId)
+                    {
+                        id
+                        idMal
+                        relations
+                        {
+                            edges
+                            {
+                                relationType
+                                node
+                                {
+                                    id
+                                    idMal
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            """
+            )
+            params = { "mediaId": media['id'] }
+            data = client.execute(query, params)
+            if any(relation['relationType'] == 'PARENT' for relation in data['Page']['media'][0]['relations']['edges']):
+                continue
+            pid = media['id']
+            pidMal = media['idMal']
+            if relations.find_one({"cid": pid}):
+                pidMal = relations.find_one({"cid": pid})['pidMal']
+                pid = relations.find_one({"cid": pid})['pid']
+            for relation in data['Page']['media'][0]['relations']['edges']:
+                if relation['node']['id'] not in already_processed:
+                    already_processed.append(relation['node']['id'])
+                    relations.insert_one({"pid": pid, "pidMal": pidMal, "cid": relation['node']['id'], "cidMal": relation['node']['idMal']})
+            time.sleep(1)
+            print(f"Consolidated collection for {media['title_romaji']}")
+
+def mark_adult(collection):
+    for media in collection.find():
+        query = gql(
+        """
+        query ($mediaId: Int)
+        {
+            Page
+            {
+                media(id: $mediaId)
+                {
+                    isAdult
+                }
+            }
+        }
+        """
+        )
+        params = { "mediaId": media['id'] }
+        data = client.execute(query, params)
+        collection.update_one({'id': media['id']}, { '$set': {'isAdult': data['Page']['media'][0]['isAdult']} })
+
+def scrape_reviews(collection):
+    for media in collection.find():
+        page = 1
+        hasNextPage = True
+        while hasNextPage:
+            query = gql(
+            """
+            query ($page: Int, $mediaId: Int)
+            {
+                Page(page: $page, perPage: 50)
+                {
+                    pageInfo
+                    {
+                        hasNextPage
+                    }
+                    reviews(mediaId: $mediaId)
+                    {
+                        id
+                        body
+                    }
+                }
+            }
+            """
+            )
+            params = { "page": page, "mediaId": media['id'] }
+            data = client.execute(query, params)
+            hasNextPage = data['Page']['pageInfo']['hasNextPage']
+            for review in data['Page']['reviews']:
+                anilistreviews.insert_one({"media": media['id'], "review": review['body']})
+            page += 1
+            time.sleep(1)
+        print(f"Scraped reviews for {media['title_romaji']}")
 
 def weight():
     other_tokens = []
@@ -359,4 +469,4 @@ def weight():
             logger.info(log_mes)
 
 if __name__ == '__main__':
-    weight()
+    consolidate_collection(gaynimes)
