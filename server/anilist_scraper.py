@@ -72,7 +72,7 @@ class Gaynime:
             "hashtags": [hashtag for hashtag in self.hashtags],
             "synonyms": [synonym for synonym in self.synonyms],
             "description": self.description,
-            "characters": [character for character in self.characters]
+            "characters": [character.db() for character in self.characters]
         }
 
 def scrape():
