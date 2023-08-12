@@ -6,7 +6,7 @@ RUN mkdir /db
 COPY requirements.txt /app/
 
 RUN pip install -r /app/requirements.txt
-RUN python -m spacy download en_core_web_trf
+RUN python -m spacy download en_core_web_sm
 
 COPY .flaskenv /app/
 COPY server app/server

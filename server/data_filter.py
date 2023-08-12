@@ -3,12 +3,9 @@ from atproto import models
 from server.logger import logger
 from server.database import db, Post
 
-import pandas as pd
 import spacy
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.base import TransformerMixin
-from sklearn.pipeline import Pipeline
 import re
 import os
 import string
