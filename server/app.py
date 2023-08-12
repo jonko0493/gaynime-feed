@@ -10,7 +10,7 @@ from server import data_stream
 from flask import Flask, jsonify, request
 
 from server.algos import algos
-from server.data_filter import operations_callback
+from server.data_filter import predictors, bow_vector, classifier, operations_callback
 from server.anilist_scraper import scrape
 
 app = Flask(__name__)
