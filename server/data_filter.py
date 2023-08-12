@@ -40,7 +40,7 @@ def spacy_tokenizer(sentence):
     tokens = [remove_urls(word) for word in tokens]
     # Remove bad words
     bad_words = []
-    with open("data/filter_slurs.txt", "r") as slur_filter:
+    with open("/model/data/filter_slurs.txt", "r") as slur_filter:
         bad_words = [line.rstrip() for line in slur_filter]
     tokens = [token for token in tokens if token not in bad_words]
     # return preprocessed list of tokens
@@ -60,8 +60,8 @@ class predictors(TransformerMixin):
 
 bow_vector = CountVectorizer(tokenizer = spacy_tokenizer, ngram_range=(1,1))
 
-from sklearn.naive_bayes import MultinomialNB
-classifier = MultinomialNB()
+from sklearn.svm import SVC
+classifier = SVC()
 
 model = joblib.load('/model/model.pkl')
 
