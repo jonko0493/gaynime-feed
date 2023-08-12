@@ -62,15 +62,16 @@ bow_vector = CountVectorizer(tokenizer = spacy_tokenizer, ngram_range=(1,1))
 from sklearn.svm import SVC
 classifier = SVC()
 
-model = joblib.load('/model/model.pkl')
+def load_model():
+    return joblib.load('/model/model.pkl')
 
 from server.algos import algos
 from server.data_filter import operations_callback, set_model
 from server.anilist_scraper import scrape
 
-set_model(model)
-
 app = Flask(__name__)
+
+set_model(load_model())
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(scrape, 'interval', minutes=86400)
