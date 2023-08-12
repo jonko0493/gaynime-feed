@@ -56,7 +56,10 @@ class Gaynime:
         self.title_romaji =  media['title']['romaji']
         self.title_english = media['title']['english']
         self.title_native = media['title']['native']
-        self.hashtags = [hashtag.strip() for hashtag in media['hashtag'].split(' ') if hashtag.strip() != '']
+        if media['hashtag'] is not None:
+            self.hashtags = [hashtag.strip() for hashtag in media['hashtag'].split(' ') if hashtag.strip() != '']
+        else:
+            self.hashtags = []
         self.synonyms = [synonym.strip() for synonym in media['synonyms'] if len(synonym) > 2]
         self.entities = []
         self.characters = []
