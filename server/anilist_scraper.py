@@ -60,8 +60,10 @@ class Gaynime:
             self.hashtags = [hashtag.strip() for hashtag in media['hashtag'].split(' ') if hashtag.strip() != '']
         else:
             self.hashtags = []
-        self.synonyms = [synonym.strip() for synonym in media['synonyms'] if len(synonym) > 2]
-        self.entities = []
+        if media['synonyms'] is not None:
+            self.synonyms = [synonym.strip() for synonym in media['synonyms'] if len(synonym) > 2]
+        else:
+            self.synonyms = []
         self.characters = []
         for character in media['characters']['nodes']:
             self.characters.append(Character(character))
