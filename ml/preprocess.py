@@ -6,6 +6,7 @@ client = MongoClient()
 anilistreviews = client.gaynime.anilistreviews
 gaynimes = client.gaynime.gaynimes
 relations = client.gaynime.relations
+otheranimes = client.others.otheranimes
 
 reviews_json = json.load(open('data/reviews.json', 'r'))
 animes_json = json.load(open('data/animes.json', 'r'))
@@ -16,46 +17,58 @@ movies_csv = csv.reader(open('data/tweets_movies.csv', encoding='utf-8'))
 
 review_data = []
 mal_review_uids = []
+mal_review_counts = {}
 
-def consolidate_id(idMal):
-    relation = relations.find_one({"cidMal": idMal})
-    if relation and relation['pidMal'] is not None:
-        return relation['pidMal']
+def consolidate_id(id):
+    relation = relations.find_one({"cid": id})
+    if relation and relation['pid'] is not None:
+        return relation['pid']
     else:
-        return idMal
+        return id
 
 for review in anilistreviews.find():
-    idMal = gaynimes.find_one({"id": review['media']})["idMal"]
-    if idMal != None:
-        review_data.append({"idMal": consolidate_id(int(idMal)), "text": review["review"]})
+    if review['media'] != None:
+        review_data.append({"id": consolidate_id(review['media']), "text": review["review"]})
 print("AniList reviews")
 for review in reviews_json:
-    review_data.append({"idMal": consolidate_id(int(review["anime_uid"])), "text": review["text"]})
-    mal_review_uids.append(int(review["uid"]))
+    anilist_entry = gaynimes.find_one({"idMal": int(review["anime_uid"])})
+    if anilist_entry is not None:
+        review_data.append({"id": consolidate_id(anilist_entry['id']), "text": review["text"]})
+        mal_review_uids.append(int(review["uid"]))
 print("MAL reviews (gaynime)")
 for anime in animes_json:
     if anime["synopsis"] != "":
-        review_data.append({"idMal": consolidate_id(int(anime["uid"])), "text": anime["synopsis"]})
+        anilist_entry = gaynimes.find_one({"idMal": int(anime["uid"])})
+        if anilist_entry:
+            review_data.append({"id": consolidate_id(anilist_entry['id']), "text": anime["synopsis"]})
 print("Mal summaries (gaynime)")
 for gaynime in gaynimes.find():
-    if gaynime["idMal"] != None:
-        review_data.append({"idMal": consolidate_id(gaynime["idMal"]), "text": ' '.join([entities['item'] for entities in gaynime["entities"]])})
+    if gaynime["id"] != None:
+        review_data.append({"id": consolidate_id(gaynime["id"]), "text": ' '.join([entities['item'] for entities in gaynime["entities"]])})
 print("Anilist summaries")
 for review in reviews_csv:
     if review[0] not in mal_review_uids and review[2] != "anime_uid":
-        review_data.append({"idMal": consolidate_id(int(review[2])), "text": review[3]})
+        anilist_entry = otheranimes.find_one({"idMal": int(review[2])})
+        if anilist_entry and anilist_entry['popularity'] > 5000:
+            if anilist_entry['id'] not in mal_review_counts.keys():
+                mal_review_counts[anilist_entry['id']] = 0
+            if mal_review_counts[anilist_entry['id']] < 20:
+                mal_review_counts[anilist_entry['id']] += 1
+                review_data.append({"id": consolidate_id(anilist_entry['id']), "text": review[3]})
 print("MAL reviews (generic)")
 for anime in animes_csv:
     if not gaynimes.find_one({"idMal": anime[0]}) and anime[0] != 'uid':
-        review_data.append({"idMal": consolidate_id(int(anime[0])), "text": anime[2]})
+        anilist_entry = otheranimes.find_one({"idMal": int(anime[0])})
+        if anilist_entry and anilist_entry['popularity'] > 5000:
+            review_data.append({"id": consolidate_id(anilist_entry['id']), "text": anime[2]})
 print("MAL summaries (generic)")
 for tweet in generic_csv:
     if tweet[0] != "textID":
-        review_data.append({"idMal": 0, "text": tweet[1]})
+        review_data.append({"id": 0, "text": tweet[1]})
 print("Tweets generic")
 for tweet in movies_csv:
     if tweet[0] != "Tweets":
-        review_data.append({"idMal": 0, "text": tweet[0]})
+        review_data.append({"id": 0, "text": tweet[0]})
 print("Tweets movies")
 
-json.dump(review_data, open('data/data.json', 'w'))
+json.dump(review_data, open('data/data.json', 'w'), indent=4)

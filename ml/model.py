@@ -7,6 +7,7 @@ from sklearn.pipeline import Pipeline
 import re
 import string
 import os
+import joblib
 from discord_webhook import DiscordWebhook
 
 nlp = spacy.load('en_core_web_sm')
@@ -55,32 +56,37 @@ bow_vector = CountVectorizer(tokenizer = spacy_tokenizer, ngram_range=(1,1))
 from sklearn.naive_bayes import MultinomialNB
 classifier = MultinomialNB()
 
-pipe_NB = Pipeline([("cleaner", predictors()),
-                 ('vectorizer', bow_vector),
-                 ('classifier', classifier)])
+webhook_url = os.environ['DISCORD_WEBHOOK_URL']
 
-all_df = pd.read_json("data/data.json")
+all_df = pd.read_json("data/data.json", lines=False)
 
 train_df, test_df = train_test_split(all_df, test_size = 0.01)
 
 X_train = train_df.text
 X_test = test_df.text
-Y_train = train_df.idMal
-Y_test = test_df.idMal
+Y_train = train_df.id
+Y_test = test_df.id
 
-webhook_url = os.environ['DISCORD_WEBHOOK_URL']
+pipe_NB = None
+if os.path.exists("model.pkl"):
+    pipe_NB = joblib.load("model.pkl")
+else:
+    pipe_NB = Pipeline([("cleaner", predictors()),
+                ('vectorizer', bow_vector),
+                ('classifier', classifier)])
+
 print("Beginning training")
-try:
+try:    
     pipe_NB.fit(X_train, Y_train)
 
-    import joblib
     joblib.dump(pipe_NB, "model.pkl")
 
     from sklearn.metrics import classification_report
     predicted = pipe_NB.predict(X_test)
     print(classification_report(Y_test, predicted))
 
-    webhook = DiscordWebhook(url=webhook_url, content="Multinomial Naive Bayes Training complete!")
+    webhook = DiscordWebhook(url=webhook_url, content=f"Multinomial Naive Bayes training complete!")
     webhook.execute()
 except Exception as e:
-    webhook = DiscordWebhook(url=webhook_url, content=f"Multinomial Naive Bayse Training failed with: {e}")
+    webhook = DiscordWebhook(url=webhook_url, content=f"Multinomial Naive Bayes training failed with: {e}")
+    webhook.execute()
