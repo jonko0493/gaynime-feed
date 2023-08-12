@@ -53,8 +53,8 @@ class predictors(TransformerMixin):
 
 bow_vector = CountVectorizer(tokenizer = spacy_tokenizer, ngram_range=(1,1))
 
-from sklearn.naive_bayes import MultinomialNB
-classifier = MultinomialNB()
+from sklearn.svm import SVC
+classifier = SVC()
 
 webhook_url = os.environ['DISCORD_WEBHOOK_URL']
 

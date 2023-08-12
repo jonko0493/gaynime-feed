@@ -66,7 +66,7 @@ bow_vector = CountVectorizer(tokenizer = spacy_tokenizer, ngram_range=(1,1))
 from sklearn.naive_bayes import MultinomialNB
 classifier = MultinomialNB()
 
-model = joblib.load('/model/model.pkl')
+model = joblib.load('/ml/model/model.pkl')
 
 def operations_callback(ops: dict) -> None:
     posts_to_create = []

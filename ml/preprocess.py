@@ -46,22 +46,22 @@ for gaynime in gaynimes.find():
     if gaynime["id"] != None:
         review_data.append({"id": consolidate_id(gaynime["id"]), "text": ' '.join([entities['item'] for entities in gaynime["entities"]])})
 print("Anilist summaries")
-for review in reviews_csv:
-    if review[0] not in mal_review_uids and review[2] != "anime_uid":
-        anilist_entry = otheranimes.find_one({"idMal": int(review[2])})
-        if anilist_entry and anilist_entry['popularity'] > 5000:
-            if anilist_entry['id'] not in mal_review_counts.keys():
-                mal_review_counts[anilist_entry['id']] = 0
-            if mal_review_counts[anilist_entry['id']] < 20:
-                mal_review_counts[anilist_entry['id']] += 1
-                review_data.append({"id": consolidate_id(anilist_entry['id']), "text": review[3]})
-print("MAL reviews (generic)")
-for anime in animes_csv:
-    if not gaynimes.find_one({"idMal": anime[0]}) and anime[0] != 'uid':
-        anilist_entry = otheranimes.find_one({"idMal": int(anime[0])})
-        if anilist_entry and anilist_entry['popularity'] > 5000:
-            review_data.append({"id": consolidate_id(anilist_entry['id']), "text": anime[2]})
-print("MAL summaries (generic)")
+# for review in reviews_csv:
+#     if review[0] not in mal_review_uids and review[2] != "anime_uid":
+#         anilist_entry = otheranimes.find_one({"idMal": int(review[2])})
+#         if anilist_entry and anilist_entry['popularity'] > 5000:
+#             if anilist_entry['id'] not in mal_review_counts.keys():
+#                 mal_review_counts[anilist_entry['id']] = 0
+#             if mal_review_counts[anilist_entry['id']] < 20:
+#                 mal_review_counts[anilist_entry['id']] += 1
+#                 review_data.append({"id": consolidate_id(anilist_entry['id']), "text": review[3]})
+# print("MAL reviews (generic)")
+# for anime in animes_csv:
+#     if not gaynimes.find_one({"idMal": anime[0]}) and anime[0] != 'uid':
+#         anilist_entry = otheranimes.find_one({"idMal": int(anime[0])})
+#         if anilist_entry and anilist_entry['popularity'] > 5000:
+#             review_data.append({"id": consolidate_id(anilist_entry['id']), "text": anime[2]})
+# print("MAL summaries (generic)")
 for tweet in generic_csv:
     if tweet[0] != "textID":
         review_data.append({"id": 0, "text": tweet[1]})
