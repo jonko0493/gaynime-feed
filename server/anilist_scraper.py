@@ -27,12 +27,16 @@ client = Client(transport=transport, fetch_schema_from_transport=True)
 
 class Character:
     def __init__(self, character):
+        self.name = ""
         if character['name']['full'] is not None:
             self.name = character['name']['full']
+        self.name_first = ""
         if character['name']['first'] is not None:
             self.name_first = character['name']['first'].lower()
+        self.name_last = ""
         if character['name']['last'] is not None:
             self.name_last = character['name']['last'].lower()
+        self.name_pref = ""
         if character['name']['userPreferred'] is not None:
             self.name_pref = character['name']['userPreferred']
     def db(self):
