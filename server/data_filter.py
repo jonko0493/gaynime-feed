@@ -13,7 +13,7 @@ gaynimes = gaydb.gaynimes
 from predictors_class import predictors, spacy_tokenizer
 
 import joblib
-model = joblib.load('/model/model.pkl')
+model = joblib.load('C:/Users/jonko/source/repos/gaynime-feed/data/model.pkl')
 
 def operations_callback(ops: dict) -> None:
     posts_to_create = []
