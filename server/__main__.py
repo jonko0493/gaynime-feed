@@ -51,7 +51,6 @@ bow_vector = CountVectorizer(tokenizer = spacy_tokenizer, ngram_range=(1,1))
 from sklearn.svm import SVC
 classifier = SVC()
 
-from server.data_filter import set_model
 from app import app
 
 if __name__ == '__main__':
