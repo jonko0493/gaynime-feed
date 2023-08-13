@@ -1,6 +1,7 @@
 from atproto import models
-from spacy_langdetect import LanguageDetector
 import spacy
+from spacy.language import Language
+from spacy_language_detection import LanguageDetector
 
 from server.logger import logger
 from server.database import db, Post
@@ -18,8 +19,12 @@ from predictors_class import predictors, spacy_tokenizer
 import joblib
 model = joblib.load('/model/model.pkl')
 
+def get_lang_detector(nlp, name):
+    return LanguageDetector(seed=42)
+
 lang_detect = spacy.load('en_core_web_sm')
-lang_detect.add_pipe(LanguageDetector(), name='language_detector', last=True)
+Language.factory("language_detector", func=get_lang_detector)
+lang_detect.add_pipe("language_detector", last=True)
 
 delisted_media = [ 101506, 87450, 108548 ]
 
