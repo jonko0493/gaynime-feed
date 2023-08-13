@@ -10,8 +10,10 @@ client = MongoClient(dbhost, 27017)
 gaydb = client.gaynime
 gaynimes = gaydb.gaynimes
 
+from predictors_class import predictors
+
 import joblib
-model = joblib.load('/model/model.pkl')
+model = joblib.load('C:/Users/jonko/source/repos/gaynime-feed/data/model.pkl')
 
 def operations_callback(ops: dict) -> None:
     posts_to_create = []

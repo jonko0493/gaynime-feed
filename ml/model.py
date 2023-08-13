@@ -2,7 +2,6 @@ import pandas as pd
 import spacy
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.base import TransformerMixin
 from sklearn.pipeline import Pipeline
 import re
 import string
@@ -42,14 +41,7 @@ def spacy_tokenizer(sentence):
 def clean_text(text):
     return text.strip().lower()
 
-class predictors(TransformerMixin):
-    def transform(self, X, **transform_params):
-        # Implement clean_text
-        return [clean_text(text) for text in X]
-    def fit(self, X, y=None, **fit_params):
-        return self
-    def get_params(self, deep=True):
-        return {}
+from predictors_class import predictors
 
 bow_vector = CountVectorizer(tokenizer = spacy_tokenizer, ngram_range=(1,1))
 
@@ -67,26 +59,23 @@ X_test = test_df.text
 Y_train = train_df.id
 Y_test = test_df.id
 
-pipe_NB = None
-if os.path.exists("model.pkl"):
-    pipe_NB = joblib.load("model.pkl")
-else:
-    pipe_NB = Pipeline([("cleaner", predictors()),
-                ('vectorizer', bow_vector),
-                ('classifier', classifier)])
+pipe_SVM = None
+pipe_SVM = Pipeline([("cleaner", predictors()),
+            ('vectorizer', bow_vector),
+            ('classifier', classifier)])
 
 print("Beginning training")
 try:    
-    pipe_NB.fit(X_train, Y_train)
+    pipe_SVM.fit(X_train, Y_train)
 
-    joblib.dump(pipe_NB, "model.pkl")
+    joblib.dump(pipe_SVM, "model.pkl")
 
     from sklearn.metrics import classification_report
-    predicted = pipe_NB.predict(X_test)
+    predicted = pipe_SVM.predict(X_test)
     print(classification_report(Y_test, predicted))
 
-    webhook = DiscordWebhook(url=webhook_url, content=f"Multinomial Naive Bayes training complete!")
+    webhook = DiscordWebhook(url=webhook_url, content=f"SVM training complete!")
     webhook.execute()
 except Exception as e:
-    webhook = DiscordWebhook(url=webhook_url, content=f"Multinomial Naive Bayes training failed with: {e}")
+    webhook = DiscordWebhook(url=webhook_url, content=f"SVM training failed with: {e}")
     webhook.execute()
