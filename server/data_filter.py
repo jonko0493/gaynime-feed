@@ -21,6 +21,8 @@ model = joblib.load('/model/model.pkl')
 lang_detect = spacy.load('en_core_web_sm')
 lang_detect.add_pipe(LanguageDetector(), name='language_detector', last=True)
 
+delisted_media = [ 101506, 87450, 108548 ]
+
 def get_prediction_below_threshold(tweet):
     probs = model.predict_proba([tweet])[0]
     threshold = float(os.environ['MODEL_THRESHOLD']) if 'MODEL_THRESHOLD' in os.environ else 0.0015
@@ -36,24 +38,26 @@ def operations_callback(ops: dict) -> None:
         if record.langs is not None and 'en' in record.langs:
             lang = lang_detect(record.text)._.language
             if lang['language'] == 'en' and lang['score'] > 0.95:
-                gay = gaynimes.find_one({"id": int(get_prediction_below_threshold(record.text))})
-                if gay and not gay['isAdult']:
-                    logger.info(f'Added record containing "{gay["title_romaji"]}"')
-                    reply_parent = None
-                    if record.reply and record.reply.parent.uri:
-                        reply_parent = record.reply.parent.uri
+                id = int(get_prediction_below_threshold(record.text))
+                if id > 0 and id not in delisted_media:
+                    gay = gaynimes.find_one({"id": id})
+                    if gay and not gay['isAdult']:
+                        logger.info(f'Added record containing "{gay["title_romaji"]}"')
+                        reply_parent = None
+                        if record.reply and record.reply.parent.uri:
+                            reply_parent = record.reply.parent.uri
 
-                    reply_root = None
-                    if record.reply and record.reply.root.uri:
-                        reply_root = record.reply.root.uri
+                        reply_root = None
+                        if record.reply and record.reply.root.uri:
+                            reply_root = record.reply.root.uri
 
-                    post_dict = {
-                        'uri': created_post['uri'],
-                        'cid': created_post['cid'],
-                        'reply_parent': reply_parent,
-                        'reply_root': reply_root,
-                    }
-                    posts_to_create.append(post_dict)
+                        post_dict = {
+                            'uri': created_post['uri'],
+                            'cid': created_post['cid'],
+                            'reply_parent': reply_parent,
+                            'reply_root': reply_root,
+                        }
+                        posts_to_create.append(post_dict)
 
     posts_to_delete = [p['uri'] for p in ops['posts']['deleted']]
     if posts_to_delete:
