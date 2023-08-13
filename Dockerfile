@@ -10,7 +10,7 @@ RUN python -m spacy download en_core_web_sm
 
 COPY .flaskenv /app/
 COPY server /app/server
-COPY data/filter_slurs.txt /app/data/filter_slurs.txt
+COPY filter-slurs/filter_slurs.txt /app/data/filter_slurs.txt
 COPY predictors_class /app/predictors_class
 
 WORKDIR /app
