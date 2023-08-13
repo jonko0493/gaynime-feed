@@ -3,7 +3,7 @@ from sklearn.base import TransformerMixin
 import re
 import string
 
-nlp = spacy.load('en_core_web_sm')
+nlp = spacy.load('en_core_web_lg')
 
 # Create list of punctuation marks
 punctuations = string.punctuation
