@@ -4,7 +4,6 @@ from server.logger import logger
 from server.database import db, Post
 from pymongo import MongoClient
 import os
-from server import __main__
 
 dbhost = "localhost" if os.environ['DB_HOST'] is None else os.environ['DB_HOST']
 client = MongoClient(dbhost, 27017)
