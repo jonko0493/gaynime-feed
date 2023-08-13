@@ -24,6 +24,6 @@ class SubscriptionState(BaseModel):
     cursor = peewee.IntegerField()
 
 
-if db.is_closed():
-    db.connect()
-    db.create_tables([Post, SubscriptionState])
+# if db.is_closed():
+#     db.connect()
+#     db.create_tables([Post, SubscriptionState])
