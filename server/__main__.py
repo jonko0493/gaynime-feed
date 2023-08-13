@@ -3,7 +3,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.base import TransformerMixin
 import re
 import string
-import joblib
 
 nlp = spacy.load('en_core_web_sm')
 
@@ -51,7 +50,7 @@ bow_vector = CountVectorizer(tokenizer = spacy_tokenizer, ngram_range=(1,1))
 from sklearn.svm import SVC
 classifier = SVC()
 
-from server.app import app
+from app import app
 
 if __name__ == '__main__':
     # FOR DEBUG PURPOSE ONLY
