@@ -18,7 +18,7 @@ model = joblib.load('/model/model.pkl')
 def get_prediction_below_threshold(tweet):
     probs = model.predict_proba([tweet])[0]
     if probs[0] < 0.7:
-         return model.classes_[1:][max(enumerate(probs[0][1:]),key=lambda x: x[1])[0]]
+         return model.classes_[1:][max(enumerate(probs[1:]),key=lambda x: x[1])[0]]
     else:
         return 0
 
