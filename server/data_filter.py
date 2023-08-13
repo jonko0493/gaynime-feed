@@ -20,7 +20,7 @@ def operations_callback(ops: dict) -> None:
     for created_post in ops['posts']['created']:
         record = created_post['record']
         if record.langs is not None and 'en' in record.langs:
-            gay = gaynimes.find_one({"id": model.predict([record.text])[0]})
+            gay = gaynimes.find_one({"id": int(model.predict([record.text])[0])})
             if gay:
                 logger.info(f'Added record containing "{gay["title_romaji"]}"')
                 reply_parent = None
