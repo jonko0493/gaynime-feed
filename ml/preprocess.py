@@ -14,6 +14,7 @@ reviews_csv = csv.reader(open('data/reviews.csv', 'r', encoding='utf-8'))
 animes_csv = csv.reader(open('data/animes.csv', 'r', encoding='utf-8'))
 generic_csv = csv.reader(open('data/tweets_generic.csv', encoding='utf-8'))
 movies_csv = csv.reader(open('data/tweets_movies.csv', encoding='utf-8'))
+bsky_csv = csv.reader(open('data/bsky_false_positives.csv', encoding='utf-8'))
 
 review_data = []
 mal_review_uids = []
@@ -40,7 +41,11 @@ for anime in animes_json:
     if anime["synopsis"] != "":
         anilist_entry = gaynimes.find_one({"idMal": int(anime["uid"])})
         if anilist_entry:
-            review_data.append({"id": consolidate_id(anilist_entry['id']), "text": anime["synopsis"]})
+            if anilist_entry['id'] not in mal_review_counts.keys():
+                mal_review_counts[anilist_entry['id']] = 0
+            if mal_review_counts[anilist_entry['id']] < 20:
+                mal_review_counts[anilist_entry['id']] += 1
+                review_data.append({"id": consolidate_id(anilist_entry['id']), "text": anime["synopsis"]})
 print("Mal summaries (gaynime)")
 for gaynime in gaynimes.find():
     if gaynime["id"] != None:
@@ -49,7 +54,7 @@ print("Anilist summaries")
 for review in reviews_csv:
     if review[0] not in mal_review_uids and review[2] != "anime_uid":
         anilist_entry = otheranimes.find_one({"idMal": int(review[2])})
-        if anilist_entry and anilist_entry['popularity'] > 50000:
+        if anilist_entry and anilist_entry['popularity'] > 100000:
             if anilist_entry['id'] not in mal_review_counts.keys():
                 mal_review_counts[anilist_entry['id']] = 0
             if mal_review_counts[anilist_entry['id']] < 20:
@@ -59,7 +64,7 @@ print("MAL reviews (generic)")
 for anime in animes_csv:
     if not gaynimes.find_one({"idMal": anime[0]}) and anime[0] != 'uid':
         anilist_entry = otheranimes.find_one({"idMal": int(anime[0])})
-        if anilist_entry and anilist_entry['popularity'] > 50000:
+        if anilist_entry and anilist_entry['popularity'] > 100000:
             review_data.append({"id": consolidate_id(anilist_entry['id']), "text": anime[2]})
 print("MAL summaries (generic)")
 for tweet in generic_csv:
@@ -70,5 +75,7 @@ for tweet in movies_csv:
     if tweet[0] != "Tweets":
         review_data.append({"id": 0, "text": tweet[0]})
 print("Tweets movies")
+for bsky in bsky_csv:
+    review_data.append({"id": 0, "text": bsky[0]})
 
 json.dump(review_data, open('data/data.json', 'w'), indent=4)

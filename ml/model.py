@@ -11,7 +11,7 @@ from predictors_class import predictors, spacy_tokenizer
 bow_vector = CountVectorizer(tokenizer = spacy_tokenizer, ngram_range=(1,1))
 
 from sklearn.svm import SVC
-classifier = SVC()
+classifier = SVC(probability=True)
 
 webhook_url = os.environ['DISCORD_WEBHOOK_URL']
 
@@ -34,8 +34,8 @@ try:
     # predicted = pipe_SVM.predict(X_test)
     # print(classification_report(Y_test, predicted))
 
-    webhook = DiscordWebhook(url=webhook_url, content=f"SVM training complete!")
+    webhook = DiscordWebhook(url=webhook_url, content=f"Complement NB training complete!")
     webhook.execute()
 except Exception as e:
-    webhook = DiscordWebhook(url=webhook_url, content=f"SVM training failed with: {e}")
+    webhook = DiscordWebhook(url=webhook_url, content=f"Complement NB training failed with: {e}")
     webhook.execute()
