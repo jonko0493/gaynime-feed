@@ -10,7 +10,7 @@ client = MongoClient(dbhost, 27017)
 gaydb = client.gaynime
 gaynimes = gaydb.gaynimes
 
-from predictors_class import predictors
+from predictors_class import predictors, spacy_tokenizer
 
 import joblib
 model = joblib.load('C:/Users/jonko/source/repos/gaynime-feed/data/model.pkl')
