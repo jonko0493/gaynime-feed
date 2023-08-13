@@ -10,6 +10,7 @@ client = MongoClient(dbhost, 27017)
 gaydb = client.gaynime
 gaynimes = gaydb.gaynimes
 
+# Needed for unpickling
 from predictors_class import predictors, spacy_tokenizer
 
 import joblib
@@ -17,17 +18,15 @@ model = joblib.load('/model/model.pkl')
 
 def get_prediction_below_threshold(tweet):
     probs = model.predict_proba([tweet])[0]
-    if probs[0] < 0.7:
-         return model.classes_[1:][max(enumerate(probs[1:]),key=lambda x: x[1])[0]]
-    else:
-        return 0
+    if any(p > 0.001 for p in probs):
+        return model.classes_[1:][max(enumerate(probs[1:]),key=lambda x: x[1])[0]]
 
 def operations_callback(ops: dict) -> None:
     posts_to_create = []
     for created_post in ops['posts']['created']:
         record = created_post['record']
         if record.langs is not None and 'en' in record.langs:
-            gay = gaynimes.find_one({"id": int(model.predict([record.text]))})
+            gay = gaynimes.find_one({"id": int(get_prediction_below_threshold(record.text))})
             if gay:
                 logger.info(f'Added record containing "{gay["title_romaji"]}"')
                 reply_parent = None
