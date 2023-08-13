@@ -20,7 +20,7 @@ def get_prediction_below_threshold(tweet):
     probs = model.predict_proba([tweet])[0]
     threshold = float(os.environ['MODEL_THRESHOLD']) if 'MODEL_THRESHOLD' in os.environ else 0.0015
     if any(p > threshold for p in probs):
-        return model.classes_[1:][max(enumerate(probs[1:]),key=lambda x: x[1])[0]]
+        return model.classes_[max(enumerate(probs),key=lambda x: x[1])[0]]
     else:
         return 0
 
