@@ -1,6 +1,6 @@
 FROM python
 
-RUN mkdir /app
+RUN mkdir -p /app/data
 RUN mkdir /db
 
 COPY requirements.txt /app/
@@ -10,6 +10,7 @@ RUN python -m spacy download en_core_web_sm
 
 COPY .flaskenv /app/
 COPY server /app/server
+COPY data/filter_slurs.txt /app/data/filter_slurs.txt
 COPY predictors_class /app/predictors_class
 
 WORKDIR /app
