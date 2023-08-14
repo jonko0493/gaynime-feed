@@ -3,7 +3,7 @@ from sklearn.base import TransformerMixin
 import re
 import string
 
-nlp = spacy.load('en_core_web_lg')
+nlp = spacy.load('en_core_web_sm')
 
 # Create list of punctuation marks
 punctuations = string.punctuation
@@ -17,9 +17,9 @@ def remove_urls(text):
 # Creat tokenizer function
 def spacy_tokenizer(sentence):
     # Create token object from spacy
-    tokens = nlp(sentence)
+    sent_nlp = nlp(sentence)
     # Lemmatize each token and convert each token into lowercase
-    tokens = [word.lemma_.lower().strip() if word.lemma_ != "PROPN" else word.lower_ for word in tokens]
+    tokens = [word.lemma_.lower().strip() if word.lemma_ != "PROPN" else word.lower_ for word in sent_nlp]
     # Remove stopwords
     tokens = [word for word in tokens if word not in stopwords and word not in punctuations]
     # Remove links

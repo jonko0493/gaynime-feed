@@ -14,11 +14,13 @@ reviews_csv = csv.reader(open('data/reviews.csv', 'r', encoding='utf-8'))
 animes_csv = csv.reader(open('data/animes.csv', 'r', encoding='utf-8'))
 generic_csv = csv.reader(open('data/tweets_generic.csv', encoding='utf-8'))
 movies_csv = csv.reader(open('data/tweets_movies.csv', encoding='utf-8'))
+rt_csv = csv.reader(open('data/rotten_tomatoes_critic_reviews.csv', encoding='utf-8'))
 bsky_csv = csv.reader(open('data/bsky_false_positives.csv', encoding='utf-8'))
 
 review_data = []
 mal_review_uids = []
 mal_review_counts = {}
+rt_review_counts = {}
 
 def consolidate_id(id):
     relation = relations.find_one({"cid": id})
@@ -75,7 +77,16 @@ for tweet in movies_csv:
     if tweet[0] != "Tweets":
         review_data.append({"id": 0, "text": tweet[0]})
 print("Tweets movies")
+for review in rt_csv:
+    if review[0] != "rotten_tomatoes_link":
+        if review[0] not in mal_review_counts.keys():
+            mal_review_counts[review[0]] = 0
+        if mal_review_counts[review[0]] < 5:
+            mal_review_counts[review[0]] += 1
+            review_data.append({"id": 0, "text": review[7]})
+print("Rotten Tomatoes reviews")
 for bsky in bsky_csv:
     review_data.append({"id": 0, "text": bsky[0]})
+print("Bsky false positives")
 
 json.dump(review_data, open('data/data.json', 'w'), indent=4)

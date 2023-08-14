@@ -26,7 +26,7 @@ lang_detect = spacy.load('en_core_web_sm')
 Language.factory("language_detector", func=get_lang_detector)
 lang_detect.add_pipe("language_detector", last=True)
 
-delisted_media = [ 101506, 87450, 108548 ]
+delisted_media = [ 101506, 87450, 108548, 118123 ]
 
 def get_prediction_below_threshold(tweet):
     probs = model.predict_proba([tweet])[0]

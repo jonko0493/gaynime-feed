@@ -10,8 +10,8 @@ from predictors_class import predictors, spacy_tokenizer
 
 bow_vector = CountVectorizer(tokenizer = spacy_tokenizer, ngram_range=(1,1))
 
-from sklearn.svm import SVC
-classifier = SVC(probability=True)
+from sklearn.naive_bayes import ComplementNB
+classifier = ComplementNB()
 
 webhook_url = os.environ['DISCORD_WEBHOOK_URL']
 

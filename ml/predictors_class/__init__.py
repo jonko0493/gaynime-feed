@@ -3,7 +3,7 @@ from sklearn.base import TransformerMixin
 import re
 import string
 
-nlp = spacy.load('en_core_web_lg')
+nlp = spacy.load('en_core_web_sm')
 
 # Create list of punctuation marks
 punctuations = string.punctuation
@@ -29,9 +29,6 @@ def spacy_tokenizer(sentence):
     with open("data/filter_slurs.txt", "r") as slur_filter:
         bad_words = [line.rstrip() for line in slur_filter]
     tokens = [token for token in tokens if token not in bad_words]
-    for ent in [ent for ent in sent_nlp.ents if ent.label_ != 'CARDINAL' and ent.label_ != 'MONEY' and ent.label_ != 'TIME' and ent.label_ != 'PERCENT' and ent.label_ != 'QUANTITY' and ent.label_ != 'ORDINAL']:
-        if ent.text.lower() not in tokens:
-            tokens.append(ent.text.lower())
     # return preprocessed list of tokens
     return tokens
 
