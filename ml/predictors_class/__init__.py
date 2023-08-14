@@ -11,6 +11,8 @@ punctuations = string.punctuation
 
 stopwords = spacy.lang.en.stop_words.STOP_WORDS
 
+false_positive_words = [ "ntr" ]
+
 def remove_urls(text):
     text = re.sub(r"\S*https?:\S*", "", text, flags=re.MULTILINE)
     return text
@@ -19,6 +21,7 @@ def remove_urls(text):
 def spacy_tokenizer(sentence):
     # Strip emojis
     sentence = emoji.replace_emoji(sentence, replace='')
+    sentence = sentence.replace('\ufffc', '')
     # Create token object from spacy
     sent_nlp = nlp(sentence)
     # Lemmatize each token and convert each token into lowercase
@@ -32,6 +35,8 @@ def spacy_tokenizer(sentence):
     with open("data/filter_slurs.txt", "r") as slur_filter:
         bad_words = [line.rstrip() for line in slur_filter]
     tokens = [token for token in tokens if token not in bad_words]
+    # Remove fals positive words
+    tokens = [token for token in tokens if token not in false_positive_words]
     # return preprocessed list of tokens
     return tokens
 
