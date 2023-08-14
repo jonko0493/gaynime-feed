@@ -1,5 +1,6 @@
 import spacy
 from sklearn.base import TransformerMixin
+import emoji
 import re
 import string
 
@@ -16,6 +17,8 @@ def remove_urls(text):
 
 # Creat tokenizer function
 def spacy_tokenizer(sentence):
+    # Strip emojis
+    sentence = emoji.replace_emoji(sentence, replace='')
     # Create token object from spacy
     sent_nlp = nlp(sentence)
     # Lemmatize each token and convert each token into lowercase
