@@ -15,6 +15,8 @@ animes_csv = csv.reader(open('data/animes.csv', 'r', encoding='utf-8'))
 generic_csv = csv.reader(open('data/tweets_generic.csv', encoding='utf-8'))
 movies_csv = csv.reader(open('data/tweets_movies.csv', encoding='utf-8'))
 rt_csv = csv.reader(open('data/rotten_tomatoes_critic_reviews.csv', encoding='utf-8'))
+wikipedia_csv = csv.reader(open('data/wikipedia.csv', encoding='utf-8'))
+steam_csv = csv.reader(open('data/steam.csv', encoding='utf-8'))
 bsky_csv = csv.reader(open('data/bsky_false_positives.csv', encoding='utf-8'))
 
 review_data = []
@@ -85,6 +87,12 @@ for review in rt_csv:
             mal_review_counts[review[0]] += 1
             review_data.append({"id": 0, "text": review[7]})
 print("Rotten Tomatoes reviews")
+for wiki in wikipedia_csv:
+    review_data.append({"id": 0, "text": wiki[0]})
+print("Wikipedia articles")
+for steam in steam_csv:
+    review_data.append({"id": 0, "text": steam[0]})
+print("Steam reviews")
 for bsky in bsky_csv:
     review_data.append({"id": 0, "text": bsky[0]})
 print("Bsky false positives")

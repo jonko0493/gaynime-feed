@@ -37,6 +37,8 @@ def spacy_tokenizer(sentence):
     tokens = [token for token in tokens if token not in bad_words]
     # Remove fals positive words
     tokens = [token for token in tokens if token not in false_positive_words]
+    # Remove duplicates -- note that we only do this when parsing tweets, not during training!
+    tokens = list(set(tokens))
     # return preprocessed list of tokens
     return tokens
 
