@@ -30,7 +30,7 @@ if __name__ == '__main__':
         "Sigmund Freud",
         "Banana",
         "Tusk",
-        
+        "Masaki Kobayashi"
         ])
     # scrape_steam_reviews([
     #     2232840

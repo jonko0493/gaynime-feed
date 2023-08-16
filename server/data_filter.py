@@ -29,7 +29,8 @@ lang_detect.add_pipe("language_detector", last=True)
 # UzaMaid delisted bc it's gross
 # Holo no Graffiti delisted because otherwise every tweet about a vtuber ends up in the feed
 # Azur Lane delisted because otherwise every tweet about the British navy ends up in the feed
-delisted_media = [ 101506, 87450, 108548, 118123, 104159 ]
+# Kakegurui delisted because too many tweets about gambling
+delisted_media = [ 101506, 87450, 108548, 118123, 104159, 100876 ]
 
 def get_prediction_below_threshold(tweet):
     probs = model.predict_proba([tweet])[0]
